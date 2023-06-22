@@ -1,13 +1,13 @@
 name: Draft release
 
 on:
+  workflow_dispatch:
   push:
     tags: "*"
 
 jobs:
   draft:
     name: Create GitHub draft release
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -69,18 +69,3 @@ jobs:
             ${{ github.workspace }}/PocketMine-MP.phar
             ${{ github.workspace }}/start.*
             ${{ github.workspace }}/build_info.json
-
-      - name: Create draft release
-        uses: ncipollo/release-action@v1.12.0
-        with:
-          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
-          commit: ${{ github.sha }}
-          draft: true
-          prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}
-          name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
-          tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
-
-            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}${{ steps.get-pm-version.outputs.CHANGELOG_SUFFIX }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
